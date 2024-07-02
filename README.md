@@ -25,6 +25,10 @@
     - [Diffing Algorithm](#key-points-about-diff-algorithm)
     - [Explanation of React Fiber](#explanation-of-react-fiber)
     - [List Diffing with Keys in React Fiber](#list-diffing-with-keys-in-react-fiber)
+8. [Props in ReactJs](#props-in-reactjs)
+9. [A react interview question on counter](#a-react-interview-question-on-counter)
+   - [Follow up Question on Counter](#follow-up-question-on-counter)
+10. 
 ----
 
 
@@ -1297,4 +1301,127 @@ In this example:
 - Provides a clear and concise way to handle missing or undefined props.
 
 Using default parameter values in function parameters is a straightforward approach to ensuring your components have default values when specific props are not passed to them.
+
+---
+
+## A react interview question on counter 
+
+### Interview Question: React Counter Component
+
+**Question:**
+Create a React component called `Counter` that displays a count starting from 0. The component should include buttons for incrementing and decrementing the count by 1, and it should also include a button to reset the count to 0. Ensure that the count cannot go below 0.
+
+**Requirements:**
+- Display the current count.
+- Buttons for incrementing, decrementing, and resetting the count.
+- Ensure the count does not go below 0 when decrementing.
+
+**Bonus:**
+- Style the counter to make it visually appealing.
+- Add functionality to allow incrementing or decrementing by a value other than 1 (e.g., increment by 5).
+
+**Example Implementation:**
+
+```jsx
+import React, { useState } from 'react';
+
+const Counter = () => {
+  const [count, setCount] = useState(0);
+
+  const increment = () => {
+    setCount(count + 1);
+  };
+
+  const decrement = () => {
+    if (count > 0) {
+      setCount(count - 1);
+    }
+  };
+
+  const reset = () => {
+    setCount(0);
+  };
+
+  return (
+    <div className="counter">
+      <h2>Counter: {count}</h2>
+      <div className="button-container">
+        <button onClick={increment}>Increment</button>
+        <button onClick={decrement}>Decrement</button>
+        <button onClick={reset}>Reset</button>
+      </div>
+    </div>
+  );
+};
+
+export default Counter;
+```
+
+### Explanation:
+- **useState**: Manages the state of `count` starting from 0.
+- **increment**: Increases `count` by 1 when the "Increment" button is clicked.
+- **decrement**: Decreases `count` by 1 when the "Decrement" button is clicked, but only if `count` is greater than 0.
+- **reset**: Resets `count` to 0 when the "Reset" button is clicked.
+- **CSS**: You can add CSS to style the `Counter` component and its buttons for better visual presentation.
+
+This question tests your understanding of state management (`useState`), event handling in React, conditional rendering, and basic UI interaction. It also allows for additional complexity if the interviewer requests bonus features like styling or custom increment/decrement values.
+
+### Follow up Question on Counter
+ 
+In React, when you call `setCount` to update the state based on the current state (`count` in this case), it does not immediately update `count` synchronously. Instead, React batches state updates for performance reasons. Therefore, calling `setCount(count + 1)` multiple times in a row like this:
+
+```jsx
+const increment = () => {
+  setCount(count + 1);
+  setCount(count + 1);
+  setCount(count + 1);
+  setCount(count + 1);
+};
+```
+
+will not increment `count` by 4 as you might expect. Instead, React will only perform the state update based on the latest state value at the time of batched updates. So, after these calls, `count` will be incremented by 1, not 4.
+
+### Explanation:
+
+1. **Asynchronous State Updates**: React batches state updates to optimize performance. When you call `setCount(count + 1)`, React schedules an update to the `count` state based on the current state value.
+
+2. **Closure over State**: Each call to `setCount` captures the current state value (`count`), which may not reflect the most recent update if called in rapid succession.
+
+3. **Functional Updates**: For scenarios where the next state depends on the previous state, you should use the functional update form of `setCount` to ensure you're updating based on the most recent state:
+
+   ```jsx
+   const increment = () => {
+     setCount(prevCount => prevCount + 1);
+     setCount(prevCount => prevCount + 1);
+     setCount(prevCount => prevCount + 1);
+     setCount(prevCount => prevCount + 1);
+   };
+   ```
+
+   This way, each call to `setCount` receives the latest state value (`prevCount`), ensuring that `count` is correctly incremented by 4.
+
+### Correct Approach:
+
+To achieve multiple increments like this in React, you should use the functional update form of `setCount` or handle multiple increments in a single update:
+
+```jsx
+const increment = () => {
+  setCount(count + 4); // Increment count by 4 in one update
+};
+```
+
+or
+
+```jsx
+const increment = () => {
+  setCount(prevCount => prevCount + 1);
+  setCount(prevCount => prevCount + 1);
+  setCount(prevCount => prevCount + 1);
+  setCount(prevCount => prevCount + 1);
+};
+```
+
+These approaches ensure that `count` is updated correctly based on the current state and React's batching mechanism.
+
+---
 
