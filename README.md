@@ -18,6 +18,7 @@
 4. [Understand the react flow and structure](#understand-the-react-flow-and-structure)
 5. [Create your own react library and JSX](#create-your-own-react-library-and-jsx)
 6. [Why you need hooks](#why-you-need-hooks)
+    - [useState()](#usestate-hook) 
 ----
 
 
@@ -831,5 +832,113 @@ Refer video.
 
 ## Why you need hooks
 
+### UI Updations
 
+- Here JavaScript does own work of increasing or decreasing the value of counter vairable but not could not able to update the UI.
+
+- To udpate UI you we use DOM manipulation selceting id then chnage the value but what about React?
+
+![alt text](image-12.png)
+
+![alt text](image-11.png)
+
+- To tackle above problem we need to use Hook.
+- To tackle problem of changing state of variable into UI we need a specific hook know as `useState`
+
+### `useState` Hook and Types of Initial State
+
+### Why const used 
+Using const with useState in React functional components ensures that state variables maintain a consistent reference, preventing accidental reassignments and promoting a clear and predictable state management pattern. This approach aligns with React's principles of declarative and predictable state handling in functional components.
+
+
+### `useState` Hook
+
+The `useState` hook in React allows functional components to manage local state.
+
+#### Syntax
+
+```javascript
+const [state, setState] = useState(initialState);
+```
+
+- **`state`**: Current state value. Holds the latest value of the state.
+- **`setState`**: Function used to update the state. Schedules a re-render with the new state value.
+- **`initialState`**: Initial value for the state. Can be a primitive type, object, array, or a function returning an initial value.
+
+### Types of Initial State
+
+1. **Primitive Types**
+
+   - **Number**:
+     ```javascript
+     const [count, setCount] = useState(0); // Number initial state
+     ```
+
+   - **String**:
+     ```javascript
+     const [name, setName] = useState(''); // String initial state
+     ```
+
+   - **Boolean**:
+     ```javascript
+     const [isActive, setIsActive] = useState(false); // Boolean initial state
+     ```
+
+2. **Complex Types**
+
+   - **Object**:
+     ```javascript
+     const [user, setUser] = useState({ name: 'John', age: 30 }); // Object initial state
+     ```
+
+   - **Array**:
+     ```javascript
+     const [list, setList] = useState(['apple', 'banana', 'cherry']); // Array initial state
+     ```
+
+3. **Function**
+
+   - Lazy Initialization:
+     ```javascript
+     const [count, setCount] = useState(() => {
+       return someExpensiveComputation();
+     });
+     ```
+
+### Example Usage with `setCount`
+
+#### Example: Counter Component
+
+```javascript
+import React, { useState } from 'react';
+
+function Counter() {
+  // Define a state variable 'count' with initial value 0
+  const [count, setCount] = useState(0);
+
+  return (
+    <div>
+      <p>Count: {count}</p>
+      <button onClick={() => setCount(count + 1)}>Increment</button>
+    </div>
+  );
+}
+```
+
+In this example:
+
+- `count` is a state variable initialized with `useState(0)`.
+- `setCount` is used to update `count` when the button is clicked, incrementing the count by 1.
+
+### Usage Tips
+
+- **Immutable Updates**: Always update state immutably (especially for objects and arrays) to ensure React detects changes correctly.
+
+- **Lazy Initialization**: Use a function for initial state when initialization involves complex computations or needs to be lazy-loaded.
+
+### Conclusion
+
+Understanding the `useState` hook and the types of initial state it supports is fundamental for managing state in React functional components. By choosing the appropriate initial state type and using `setState` effectively, you can manage component state and ensure optimal rendering and performance.
+
+---
 
