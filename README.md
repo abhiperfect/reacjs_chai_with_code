@@ -19,7 +19,6 @@
 
 
 ## DOM (Document Object Model) Manipulation
-```markdown
 
 ### Introduction
 
