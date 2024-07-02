@@ -16,6 +16,8 @@
      - [ESLint Configuration](#eslint-configuration)
      - [Supporting Browsers (Browserslist)](#supporting-browsers-browserslist)
 4. [Understand the react flow and structure](#understand-the-react-flow-and-structure)
+5. [Create your own react library and JSX](#create-your-own-react-library-and-jsx)
+6. [Why you need hooks](#why-you-need-hooks)
 ----
 
 
@@ -767,5 +769,67 @@ export default App;
   ![alt text](image-10.png)
 
 
+In React, JavaScript can indeed be written within the `return` statement, but it needs to be enclosed in curly braces `{}` to differentiate JavaScript expressions from JSX syntax. JSX (JavaScript XML) is a syntax extension that allows you to write HTML-like code within JavaScript, used extensively in React for defining UI components.
+
+### Reasons for Using Curly Braces `{}` in JSX:
+
+1. **Embedding JavaScript Expressions**: JSX allows embedding JavaScript expressions within curly braces `{}` directly in the markup.
+   
+   ```jsx
+   function Greeting(props) {
+     const name = props.name;
+     return <h1>Hello, {name}!</h1>;
+   }
+   ```
+
+2. **Dynamic Content**: Curly braces `{}` are used to inject dynamic content, such as variables, function calls, or calculations, into JSX elements.
+
+   ```jsx
+   function Button(props) {
+     const buttonText = props.isActive ? 'Active' : 'Inactive';
+     return <button>{buttonText}</button>;
+   }
+   ```
+
+3. **JavaScript Logic**: While you can write basic JavaScript expressions directly in JSX, complex logic or multiple statements are typically handled outside the `return` statement for clarity and maintainability.
+
+   ```jsx
+   function ExampleComponent(props) {
+     const isLoggedIn = props.isLoggedIn;
+     
+     // JavaScript logic outside return
+     if (isLoggedIn) {
+       return <UserDashboard />;
+     } else {
+       return <LoginForm />;
+     }
+   }
+   ```
+
+### Why Not JavaScript Directly in JSX?
+
+- **JSX vs. JavaScript Separation**: JSX is designed to resemble HTML, making the code more readable and maintainable for UI components. Mixing complex JavaScript logic directly within JSX can make the code harder to understand.
+
+- **Component Rendering**: JSX should primarily focus on describing the UI structure based on state and props. Keeping JavaScript logic outside `return` helps in maintaining a clear separation of concerns and improves code organization.
+
+- **Rendering Efficiency**: React optimizes JSX rendering by efficiently diffing the virtual DOM. Complex JavaScript logic directly within JSX may hinder React's ability to optimize updates effectively.
+
+### Best Practices:
+
+- **Use Curly Braces for Expressions**: Embrace JSX's ability to embed JavaScript expressions within `{}` for dynamic content.
+  
+- **Separate Logic from JSX**: Keep complex JavaScript logic, conditionals, and loops outside the `return` statement to enhance readability and maintainability.
+
+- **Functional Components**: With the introduction of React Hooks, functional components are preferred, where JavaScript logic can be encapsulated in custom hooks or functional components, promoting reusability and testability.
+
+In essence, while React allows embedding JavaScript expressions within JSX using curly braces `{}`, it's crucial to maintain a balance between JSX's declarative nature and JavaScript's imperative logic for building efficient and maintainable UI components.
+
+
+Refer video.
+
 ---
+
+## Why you need hooks
+
+
 
