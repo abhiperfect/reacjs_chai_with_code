@@ -757,3 +757,15 @@ export default App;
 
 ---
 
+## Create your own react library and JSX
+
+- `<MyApp />` : it is JSX function call
+- `MyApp()`   : it is also function call both will behave same
+
+  ![alt text](image-9.png)
+
+  ![alt text](image-10.png)
+
+
+---
+
