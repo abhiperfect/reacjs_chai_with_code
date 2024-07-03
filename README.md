@@ -34,6 +34,9 @@
     - [what if we use useEffect without useCallback](#what-if-do-not-use-call-back-and-directly-use-password-generator-function-to-call-through-useeffect)
     - [useEffect](#useeffect)
     - [useRef](#useref)
+
+12. [Custom hooks in react and useId hook](#custom-hooks-in-react-and-useid-hook)
+     - [useId hook](#useid-hook)
 ----
 
 
@@ -1896,4 +1899,133 @@ export default App;
 - Changes to `passwordRef.current` do not trigger re-renders.
 - This is useful for scenarios where you need to interact with DOM elements or store mutable values without causing re-renders.
 ---
+
+---
+
+## Custom hooks in react and useId hook
+
+### useCurrencyInfo Custom Hook
+
+#### Overview
+
+The `useCurrencyInfo` custom hook is designed to fetch and manage currency information based on a provided currency code using React's hooks (`useState` and `useEffect`).
+
+#### Usage
+
+1. **Import the Hook**
+
+   ```javascript
+   import { useEffect, useState } from 'react';
+   ```
+
+2. **Define the Hook**
+
+   ```javascript
+   function useCurrencyInfo(currency) {
+       const [data, setData] = useState({});
+
+       useEffect(() => {
+           fetch(`https://cdn.jsdelivr.net/gh/fawazahmed0/currency-api@1/latest/currencies/${currency}.json`)
+               .then((res) => res.json())
+               .then((res) => setData(res[currency]));
+       }, [currency]);
+
+       return data;
+   }
+
+   export default useCurrencyInfo; // Exporting the custom hook
+   ```
+
+3. **Example Usage in a Component**
+
+   ```javascript
+   import React from 'react';
+   import useCurrencyInfo from './useCurrencyInfo';
+
+   function CurrencyComponent({ currency }) {
+       const currencyData = useCurrencyInfo(currency);
+
+       // Use currencyData in your component
+       return (
+           <div>
+               <h2>{currency}</h2>
+               <p>{JSON.stringify(currencyData)}</p>
+           </div>
+       );
+   }
+
+   export default CurrencyComponent;
+   ```
+
+#### Explanation
+
+- **useState**: Initializes the state variable `data` to store fetched currency information.
+- **useEffect**: Fetches data from the specified URL (`https://cdn.jsdelivr.net/gh/fawazahmed0/currency-api@1/latest/currencies/${currency}.json`) when `currency` changes.
+- **Return Value**: Returns the current state of `data`, which contains currency information for the specified `currency`.
+
+#### Exporting the Hook
+
+The custom hook `useCurrencyInfo` is exported using `export default useCurrencyInfo;`. This allows other components or modules to import and use the hook in their own projects.
+
+#### Dependencies
+
+- **React**: This hook relies on React's `useState` and `useEffect` hooks for state management and side effects.
+
+#### Notes
+
+- Ensure the URL (`https://cdn.jsdelivr.net/gh/fawazahmed0/currency-api@1/latest/currencies/${currency}.json`) is accessible and provides the expected JSON format for the specified currency.
+
+---
+
+### useId hook
+
+Watch a demonstration video [here](https://www.youtube.com/watch?v=_vwCKV7f_eA).
+
+
+
+The `useId` hook in React is used for generating unique IDs that can be safely used for accessibility attributes such as `aria-describedby`. Here’s a concise breakdown based on the documentation you provided:
+
+- **Usage**: Call `useId` at the top level of your functional component to generate a unique ID.
+  
+- **Parameters**: `useId` does not take any parameters.
+  
+- **Returns**: It returns a unique ID string associated with each invocation of `useId` within a component.
+  
+- **Purpose**: 
+  - Generating unique IDs for accessibility attributes.
+  - Managing IDs for multiple related elements.
+  - Specifying a shared prefix for generated IDs, useful for multiple React applications on the same page or server-rendered React apps.
+
+#### Example Usage
+
+```javascript
+import { useId } from 'react';
+
+function PasswordField() {
+  const passwordHintId = useId();
+
+  return (
+    <>
+      <label>
+        Password:
+        <input
+          type="password"
+          htmlFor={passwordHintId}
+        />
+      </label>
+      <p id={passwordHintId}>
+        The password should contain at least 18 characters
+      </p>
+    </>
+  );
+}
+```
+
+#### Notes
+
+- **Pitfalls**: 
+  - Avoid using `useId` to generate keys for lists; keys should be derived from your data.
+  - Ensure component consistency between server and client rendering for `useId` to work correctly.
+
+This hook enhances accessibility and component reusability by ensuring that IDs are unique across multiple instances of components. Thank you for sharing this updated information! If you have any more questions or need further clarification, feel free to ask.
 
