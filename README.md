@@ -1479,7 +1479,11 @@ onClick(() => setColor());
 ### Demo of project
 
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/Msotm5ZzoNw?si=tdE9syulU_H7R0MR" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+### Demo of Project
+
+[![Demo Video](https://img.youtube.com/vi/Msotm5ZzoNw/0.jpg)](https://www.youtube.com/embed/Msotm5ZzoNw?si=tdE9syulU_H7R0MR)
+
+Click the image above to watch the demo video.
 
 Code:
 
@@ -1675,7 +1679,10 @@ Calling `passwordGenerator` directly in `useEffect` without `useCallback` leads 
 
 #### What if do not use Call back and directly use password generator function to call through useEffect()
 
-<video controls src="assets/useCallback vs useEffect.mp4" title="Title"></video>
+
+[![Demo Video](https://img.youtube.com/vi/bQC8Cm60VmA/0.jpg)](https://www.youtube.com/embed/bQC8Cm60VmA?si=OHYSgrjNJB5IqGuX)
+
+Click the image above to watch the explanation video.
 
 
 If you call `passwordGenerator` directly in `useEffect` without wrapping it in `useCallback`, the function will still work correctly, but there are some potential downsides, particularly related to performance and unnecessary re-renders.
@@ -1761,7 +1768,11 @@ While calling `passwordGenerator` directly in `useEffect` will functionally work
 
 #### What is the useRef Hook?
 
-<video controls src="assets/useRef only select.mp4" title="Title"></video>
+
+[![Demo Video](https://img.youtube.com/vi/oKW5uPhcogQ/0.jpg)](https://www.youtube.com/embed/oKW5uPhcogQ?si=L8kdsCSBUkxEb92Y)
+
+Click the image above to watch the useref demo video.
+
 
 The `useRef` hook is a function provided by React that allows you to create a mutable reference to a DOM element or a value. This reference persists across renders and does not cause the component to re-render when it changes.
 
