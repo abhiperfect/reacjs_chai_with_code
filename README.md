@@ -29,7 +29,11 @@
 9. [A react interview question on counter](#a-react-interview-question-on-counter)
    - [Follow up Question on Counter](#follow-up-question-on-counter)
 10. [onClick](#onclick-function) 
-
+11. [useEffect, useRef and useCallback](#useeffect-useref-and-usecallback)
+    - [useCallback](#usecallback)
+    - [what if we use useEffect without useCallback](#what-if-do-not-use-call-back-and-directly-use-password-generator-function-to-call-through-useeffect)
+    - [useEffect](#useeffect)
+    - [useRef](#useref)
 ----
 
 
@@ -1470,6 +1474,414 @@ onClick(() => setColor());
 - **Function Reference**: `onClick(() => setColor);` and `onClick(() => setColor());` pass a function reference or call `setColor` within an arrow function when the element is clicked.
 
 ---
+## useEffect, useRef and useCallback
+
+### Demo of project
+
+<video controls src="assets/useEffect, useRef and useCallback project.mp4" title="Title"></video>
+
+Code:
+
+```javascript
+
+import { useState, useCallback, useEffect, useRef } from 'react'
 
 
+
+function App() {
+  const [length, setLength] = useState(8)
+  const [numberAllowed, setNumberAllowed] = useState(false);
+  const [charAllowed, setCharAllowed] = useState(false)
+  const [password, setPassword] = useState("")
+
+  //useRef hook
+  const passwordRef = useRef(null)
+
+  const passwordGenerator = useCallback(() => {
+    let pass = ""
+    let str = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+    if (numberAllowed) str += "0123456789"
+    if (charAllowed) str += "!@#$%^&*-_+=[]{}~`"
+
+    for (let i = 1; i <= length; i++) {
+      let char = Math.floor(Math.random() * str.length + 1)
+      pass += str.charAt(char)
+      
+    }
+
+    setPassword(pass)
+
+
+  }, [length, numberAllowed, charAllowed, setPassword])
+
+  const copyPasswordToClipboard = useCallback(() => {
+    passwordRef.current?.select();
+    passwordRef.current?.setSelectionRange(0, 999);
+    window.navigator.clipboard.writeText(password)
+  }, [password])
+
+  useEffect(() => {
+    passwordGenerator()
+  }, [length, numberAllowed, charAllowed, passwordGenerator])
+  return (
+    
+    <div className="w-full max-w-md mx-auto shadow-md rounded-lg px-4 py-3 my-8 bg-gray-800 text-orange-500">
+      <h1 className='text-white text-center my-3'>Password generator</h1>
+    <div className="flex shadow rounded-lg overflow-hidden mb-4">
+        <input
+            type="text"
+            value={password}
+            className="outline-none w-full py-1 px-3"
+            placeholder="Password"
+            readOnly
+            ref={passwordRef}
+        />
+        <button
+        onClick={copyPasswordToClipboard}
+        className='outline-none bg-blue-700 text-white px-3 py-0.5 shrink-0'
+        >copy</button>
+        
+    </div>
+    <div className='flex text-sm gap-x-2'>
+      <div className='flex items-center gap-x-1'>
+        <input 
+        type="range"
+        min={6}
+        max={100}
+        value={length}
+         className='cursor-pointer'
+         onChange={(e) => {setLength(e.target.value)}}
+          />
+          <label>Length: {length}</label>
+      </div>
+      <div className="flex items-center gap-x-1">
+      <input
+          type="checkbox"
+          defaultChecked={numberAllowed}
+          id="numberInput"
+          onChange={() => {
+              setNumberAllowed((prev) => !prev);
+          }}
+      />
+      <label htmlFor="numberInput">Numbers</label>
+      </div>
+      <div className="flex items-center gap-x-1">
+          <input
+              type="checkbox"
+              defaultChecked={charAllowed}
+              id="characterInput"
+              onChange={() => {
+                  setCharAllowed((prev) => !prev )
+              }}
+          />
+          <label htmlFor="characterInput">Characters</label>
+      </div>
+    </div>
+</div>
+    
+  )
+}
+
+export default App
+
+```
+
+
+
+### Breakdown of code
+
+#### useCallback
+
+##### useCallback Syntax
+
+```javascript
+const memoizedCallback = useCallback(() => {
+  // Function logic here
+}, [dependency1, dependency2, ...]);
+```
+
+##### code
+
+```javascript
+const passwordGenerator = useCallback(() => {
+  let pass = ""
+  let str = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+  if (numberAllowed) str += "0123456789"
+  if (charAllowed) str += "!@#$%^&*-_+=[]{}~`"
+
+  for (let i = 1; i <= length; i++) {
+    let char = Math.floor(Math.random() * str.length + 1)
+    pass += str.charAt(char)
+  }
+
+  setPassword(pass)
+}, [length, numberAllowed, charAllowed, setPassword])
+```
+
+##### Explanation
+
+1. **useCallback Hook**:
+    - The entire `passwordGenerator` function is wrapped in `useCallback` to memoize it.
+    - This means the function will only be recreated if one of its dependencies (`length`, `numberAllowed`, `charAllowed`, `setPassword`) changes.
+    - **Purpose**: Optimizes performance by preventing unnecessary function recreations.
+
+This function is crucial for dynamically generating passwords based on user-defined criteria (length, inclusion of numbers, and special characters) and ensures that the component efficiently updates only when necessary.
+
+#### useEffect()
+
+##### useEffect Syntax
+
+```javascript
+useEffect(() => {
+  // Effect logic here
+  // This function runs when the component mounts and when any dependency changes.
+
+  return () => {
+    // Cleanup logic here (optional)
+    // This function runs when the component unmounts or before the effect runs again.
+  };
+}, [dependency1, dependency2, ...]);
+```
+
+##### Code:
+
+```javascript
+useEffect(() => {
+  passwordGenerator();
+}, [length, numberAllowed, charAllowed, passwordGenerator]);
+```
+
+##### Explanation:
+
+1. **useEffect Hook**:
+   - Runs the `passwordGenerator` function whenever any dependency in the array `[length, numberAllowed, charAllowed, passwordGenerator]` changes.
+
+2. **Dependencies**:
+   - `length`, `numberAllowed`, `charAllowed`: User-defined states affecting password generation.
+   - `passwordGenerator`: If not memoized, this function is recreated on every render.
+
+3. **Direct Call without useCallback**:
+   - Causes `passwordGenerator` to be seen as a new function on every render.
+   - Leads to `useEffect` running more frequently than necessary, even if only the function reference changes.
+
+4. **Optimal Approach with useCallback**:
+   - Memoize `passwordGenerator` using `useCallback` to ensure it only changes when its dependencies change.
+   - Prevents unnecessary re-renders and executions of `useEffect`.
+
+##### Summary:
+
+Calling `passwordGenerator` directly in `useEffect` without `useCallback` leads to redundant executions due to frequent function re-creations. Use `useCallback` to optimize and stabilize the component behavior.
+
+#### What if do not use Call back and directly use password generator function to call through useEffect()
+
+<video controls src="assets/useCallback vs useEffect.mp4" title="Title"></video>
+
+
+If you call `passwordGenerator` directly in `useEffect` without wrapping it in `useCallback`, the function will still work correctly, but there are some potential downsides, particularly related to performance and unnecessary re-renders.
+
+##### Without `useCallback`:
+
+1. **useEffect Code**:
+    ```javascript
+    useEffect(() => {
+      passwordGenerator();
+    }, [length, numberAllowed, charAllowed]);
+    ```
+
+2. **passwordGenerator Function**:
+    ```javascript
+    const passwordGenerator = () => {
+      let pass = "";
+      let str = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+      if (numberAllowed) str += "0123456789";
+      if (charAllowed) str += "!@#$%^&*-_+=[]{}~`";
+  
+      for (let i = 1; i <= length; i++) {
+        let char = Math.floor(Math.random() * str.length + 1);
+        pass += str.charAt(char);
+      }
+  
+      setPassword(pass);
+    };
+    ```
+
+##### Potential Downsides:
+
+1. **Re-Creation of Function on Every Render**:
+    - Without `useCallback`, `passwordGenerator` is recreated on every render.
+    - This can lead to performance issues, especially if the component renders frequently.
+
+2. **Redundant Calls**:
+    - Each time `length`, `numberAllowed`, or `charAllowed` changes, `useEffect` will run.
+    - If `passwordGenerator` is not memoized, it might lead to redundant executions if there are other state or prop changes causing re-renders.
+
+##### Using `useCallback`:
+
+1. **useEffect Code**:
+    ```javascript
+    useEffect(() => {
+      passwordGenerator();
+    }, [length, numberAllowed, charAllowed, passwordGenerator]);
+    ```
+
+2. **Memoized passwordGenerator Function**:
+    ```javascript
+    const passwordGenerator = useCallback(() => {
+      let pass = "";
+      let str = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+      if (numberAllowed) str += "0123456789";
+      if (charAllowed) str += "!@#$%^&*-_+=[]{}~`";
+  
+      for (let i = 1; i <= length; i++) {
+        let char = Math.floor(Math.random() * str.length + 1);
+        pass += str.charAt(char);
+      }
+  
+      setPassword(pass);
+    }, [length, numberAllowed, charAllowed]);
+    ```
+
+##### Benefits of Using `useCallback`:
+
+1. **Avoids Unnecessary Re-Creation**:
+    - The `passwordGenerator` function is only recreated when one of its dependencies (`length`, `numberAllowed`, `charAllowed`) changes.
+    - This improves performance by preventing unnecessary function re-creations.
+
+2. **Stability in `useEffect`**:
+    - By providing a stable reference to `passwordGenerator`, `useEffect` dependencies are more predictable.
+    - This reduces the chance of unintended side effects due to frequent re-executions.
+
+##### Conclusion
+
+While calling `passwordGenerator` directly in `useEffect` will functionally work, wrapping it in `useCallback` is a best practice that optimizes performance and ensures more predictable behavior in your component. It helps avoid unnecessary function re-creations and redundant side effect executions, making your component more efficient and stable.
+
+---
+### useRef()
+
+#### What is the useRef Hook?
+
+<video controls src="assets/useRef only select.mp4" title="Title"></video>
+
+The `useRef` hook is a function provided by React that allows you to create a mutable reference to a DOM element or a value. This reference persists across renders and does not cause the component to re-render when it changes.
+
+#### Syntax
+
+```javascript
+const myRef = useRef(initialValue);
+```
+
+- **myRef**: This is the reference object created by `useRef`.
+- **initialValue**: The initial value you want to set for the reference. Often, this is `null` when referring to DOM elements.
+
+#### Key Concepts
+
+1. **Mutable Object**:
+    - The object returned by `useRef` has a property called `current`.
+    - You can read and modify the `current` property without triggering a re-render.
+
+2. **Persistent Value**:
+    - The reference object (`myRef`) persists for the lifetime of the component.
+    - This means the value of `myRef.current` is maintained between re-renders.
+
+3. **No Re-Renders**:
+    - Updating `myRef.current` does not cause the component to re-render.
+    - This is different from state variables, which trigger re-renders when updated.
+
+#### Common Uses
+
+1. **Accessing DOM Elements**:
+    - You can use `useRef` to directly interact with a DOM element (e.g., focus an input, measure an element's size).
+
+2. **Storing Mutable Values**:
+    - `useRef` can store any mutable value that you do not want to cause a re-render when updated (e.g., a timer ID, a previous state value).
+
+#### Example: Accessing a DOM Element
+
+Let's revisit the example from your code to explain how `useRef` is used to access a DOM element.
+
+##### Step-by-Step Explanation
+
+1. **Import useRef**:
+    - Ensure you import `useRef` from React.
+    ```javascript
+    import { useRef } from 'react';
+    ```
+
+2. **Create a Reference**:
+    - Use `useRef` to create a reference and initialize it with `null`.
+    ```javascript
+    const passwordRef = useRef(null);
+    ```
+
+3. **Attach the Reference to a DOM Element**:
+    - Attach the `ref` attribute of an element to the reference created.
+    ```javascript
+    <input
+      type="text"
+      value={password}
+      className="outline-none w-full py-1 px-3"
+      placeholder="Password"
+      readOnly
+      ref={passwordRef}  // Attach ref here
+    />
+    ```
+
+4. **Use the Reference**:
+    - Access and manipulate the DOM element using `passwordRef.current`.
+    - In this case, the function `copyPasswordToClipboard` uses `passwordRef.current` to select the text inside the input and copy it to the clipboard.
+
+```javascript
+const copyPasswordToClipboard = useCallback(() => {
+  passwordRef.current?.select();  // Select the text
+  passwordRef.current?.setSelectionRange(0, 999);  // Set the selection range
+  window.navigator.clipboard.writeText(password);  // Copy the text to the clipboard
+}, [password]);
+```
+
+##### Putting It All Together
+
+Here’s how the `useRef` hook is used in the complete example:
+
+```javascript
+import React, { useRef, useState, useCallback } from 'react';
+
+function App() {
+  const [password, setPassword] = useState("examplePassword");
+  
+  // Create a reference to the input element
+  const passwordRef = useRef(null);
+
+  // Function to copy the password to the clipboard
+  const copyPasswordToClipboard = useCallback(() => {
+    if (passwordRef.current) {
+      passwordRef.current.select();  // Select the text
+      passwordRef.current.setSelectionRange(0, 999);  // Set the selection range
+      window.navigator.clipboard.writeText(password);  // Copy the text to the clipboard
+    }
+  }, [password]);
+
+  return (
+    <div>
+      <input
+        type="text"
+        value={password}
+        placeholder="Password"
+        readOnly
+        ref={passwordRef}  // Attach the reference to the input
+      />
+      <button onClick={copyPasswordToClipboard}>Copy</button>
+    </div>
+  );
+}
+
+export default App;
+```
+
+##### Summary
+
+- **useRef** creates a reference object that persists across renders.
+- **passwordRef.current** is used to access and manipulate the DOM element directly.
+- Changes to `passwordRef.current` do not trigger re-renders.
+- This is useful for scenarios where you need to interact with DOM elements or store mutable values without causing re-renders.
+---
 
