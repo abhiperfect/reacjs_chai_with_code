@@ -1478,7 +1478,7 @@ onClick(() => setColor());
 
 ### Demo of project
 
-<video controls src="assets/useEffect, useRef and useCallback project.mp4" title="Title"></video>
+  <video controls src="assets/useEffect, useRef and useCallback project.mp4" title="Title" width="560" height="315"></video>
 
 Code:
 
