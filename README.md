@@ -37,6 +37,15 @@
 
 12. [Custom hooks in react and useId hook](#custom-hooks-in-react-and-useid-hook)
      - [useId hook](#useid-hook)
+13. [React router crash course](#react-router-crash-course)
+    - [<a>, <Link>, & <NavLink> Navigation Components in React](#navigation-components-in-react)
+    - [Using NavLink in React Router](#using-navlink-in-react-router)
+    - [Outlet in react router dom](#outlet-in-react-router-dom)
+    - [Ways to representing routes](#way-to-representing-routes)
+    - [useParmas from 'react-router-dom'](#use-useid-using-useparams)
+    - [Github API fetching](#github-api-fetching)
+    - [React Outlet again](#react-outlet)
+    - [Concept of Loader](#concept-of-loader)
 ----
 
 
@@ -2028,4 +2037,450 @@ function PasswordField() {
   - Ensure component consistency between server and client rendering for `useId` to work correctly.
 
 This hook enhances accessibility and component reusability by ensuring that IDs are unique across multiple instances of components. Thank you for sharing this updated information! If you have any more questions or need further clarification, feel free to ask.
+
+
+## React router crash course
+
+Here's a combined documentation that compares `<a>` tag, `Link`, and `NavLink` for navigation in a React application, suitable for GitHub documentation:
+
+---
+
+### Navigation Components in React
+
+#### `<a>` Tag
+
+The `<a>` tag is a standard HTML element used for creating hyperlinks between web pages. It directs the browser to navigate to the specified URL when clicked.
+
+- **Navigation Behavior**: Clicking an `<a>` tag initiates a full page reload unless handled with JavaScript.
+
+- **Usage Example**:
+  ```jsx
+  function App() {
+    return (
+      <div>
+        <a href="/">Home</a>
+        <a href="/about">About</a>
+        <a href="/contact">Contact</a>
+      </div>
+    );
+  }
+  ```
+
+- **Benefits**:
+  - Simple and straightforward implementation.
+  - Compatible with all browsers and requires no additional libraries.
+
+- **Considerations**:
+  - Causes full page reloads, which may impact user experience in single-page applications.
+  - SEO-friendly when used correctly with meaningful `href` attributes.
+
+---
+
+#### React Router's `Link` Component
+
+React Router's `Link` component provides client-side routing within React applications without full page reloads. It intercepts clicks to handle navigation programmatically.
+
+- **Navigation Behavior**: `Link` prevents full page reloads by handling navigation internally within the React application.
+
+- **Usage Example**:
+  ```jsx
+  import { Link } from 'react-router-dom';
+
+  function Navigation() {
+    return (
+      <nav>
+        <ul>
+          <li><Link to="/">Home</Link></li>
+          <li><Link to="/about">About</Link></li>
+          <li><Link to="/contact">Contact</Link></li>
+        </ul>
+      </nav>
+    );
+  }
+  ```
+
+- **Benefits**:
+  - Enables single-page application (SPA) behavior with smooth client-side transitions.
+  - Integrates seamlessly with React Router for dynamic routing based on application state.
+  - Supports additional props like `activeClassName` and `activeStyle` for styling active links (`NavLink` variant).
+
+- **Considerations**:
+  - Requires React Router library installation (`react-router-dom`).
+  - Provides more control over navigation and enhances user experience with faster transitions.
+
+---
+
+#### React Router's `NavLink` Component
+
+`NavLink` is a variant of `Link` provided by React Router that adds additional styling capabilities when the link is active. It applies an `activeClassName` or `activeStyle` to the link when its `to` route matches the current URL.
+
+- **Navigation Behavior**: `NavLink` behaves similarly to `Link` but includes enhanced styling for active links.
+
+- **Usage Example**:
+  ```jsx
+  import { NavLink } from 'react-router-dom';
+
+  function Navigation() {
+    return (
+      <nav>
+        <ul>
+          <li><NavLink to="/" exact activeClassName="active">Home</NavLink></li>
+          <li><NavLink to="/about" activeClassName="active">About</NavLink></li>
+          <li><NavLink to="/contact" activeClassName="active">Contact</NavLink></li>
+        </ul>
+      </nav>
+    );
+  }
+  ```
+
+- **Benefits**:
+  - Adds styling capabilities for active links, improving user experience with highlighted navigation.
+  - Maintains all functionalities of `Link` with additional visual cues for active routes.
+
+- **Considerations**:
+  - Requires `react-router-dom` library installation.
+  - Ideal for navigation menus where highlighting the active link is important.
+
+---
+
+#### Comparison Summary
+
+| Feature           | `<a>` Tag                               | `Link` Component                           | `NavLink` Component                        |
+|-------------------|------------------------------------------|--------------------------------------------|-------------------------------------------|
+| **Navigation**    | Full page reload                         | Prevents full page reload                  | Prevents full page reload                  |
+| **Integration**   | HTML                                      | React Router                               | React Router                               |
+| **Styling**       | CSS                                       | CSS with additional `activeClassName`      | CSS with `activeClassName` and `activeStyle`|
+| **Use Case**      | Basic navigation in multi-page apps       | SPA navigation in React applications       | SPA navigation with active link styling    |
+
+---
+
+### Using NavLink in React Router
+
+The `NavLink` component in React Router allows for creating navigation links that respond to route changes and provide active link styling.
+
+#### Example Usage
+
+```jsx
+import { NavLink } from 'react-router-dom';
+
+function Navigation() {
+  return (
+    <nav>
+      <ul>
+        <li>
+          <NavLink
+            to="/"
+            className={({ isActive }) =>
+              `block py-2 pr-4 pl-3 duration-200 ${
+                isActive ? "text-orange-700" : "text-gray-700"
+              } border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 hover:text-orange-700 lg:p-0`
+            }
+          >
+            Home
+          </NavLink>
+        </li>
+      </ul>
+    </nav>
+  );
+}
+```
+
+#### Explanation
+
+- **`NavLink` Component**: Creates a navigation link in React Router that dynamically applies styles based on the current route.
+
+- **`to` Prop**: Specifies the destination URL for the link.
+
+- `**isActive:** A boolean value provided by NavLink indicating if the link's destination matches the current URL.`
+   - **`${isActive ? "text-orange-700" : "text-gray-700"}`**: Toggles text color between orange (`text-orange-700`) for active links and gray (`text-gray-700`) for inactive links.
+
+#### Benefits
+
+- **Conditional Styling**: The isActive prop from NavLink dynamically applies styles based on whether the link is active (matches the current URL). This is achieved using a ternary operator within the className prop to toggle between different Tailwind CSS classes (text-orange-700 for active and text-gray-700 for inactive).
+- **Enhanced User Experience**: Prevents full page reloads, maintaining a smooth navigation experience within single-page applications (SPAs).
+
+---
+
+### Outlet in react router dom
+
+In React Router, the concept of an "outlet" refers to a designated area where child routes are rendered based on the current route configuration. Here’s how you can use the outlet in React Router with an example:
+
+#### Example Using Outlet in React Router
+
+#### Layout Component (`Layout.jsx`)
+
+First, define a layout component (`Layout.jsx`) that includes a navigation bar and an outlet for rendering child routes:
+
+```jsx
+// Layout.jsx
+import React from 'react';
+import { NavLink, Outlet } from 'react-router-dom';
+
+const Layout = () => {
+  return (
+    <div className="container">
+      <header>
+        <nav className="navbar">
+          <ul className="nav">
+            <li className="nav-item">
+              <NavLink to="/" exact className="nav-link" activeClassName="active">
+                Home
+              </NavLink>
+            </li>
+            <li className="nav-item">
+              <NavLink to="/about" className="nav-link" activeClassName="active">
+                About
+              </NavLink>
+            </li>
+            <li className="nav-item">
+              <NavLink to="/contact" className="nav-link" activeClassName="active">
+                Contact
+              </NavLink>
+            </li>
+          </ul>
+        </nav>
+      </header>
+      <main className="content">
+        {/* Outlet for rendering child routes */}
+        <Outlet />
+      </main>
+      <footer className="footer">
+        <p>&copy; 2024 Your Company</p>
+      </footer>
+    </div>
+  );
+};
+
+export default Layout;
+```
+
+#### Router Configuration (`App.jsx`)
+
+Next, configure your routes (`App.jsx`) using `react-router-dom` to leverage the `Outlet` within the `Layout` component:
+
+```jsx
+// App.jsx
+import React from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import Layout from './Layout';
+import Home from './components/Home';
+import About from './components/About';
+import Contact from './components/Contact';
+
+const App = () => {
+  return (
+    <Router>
+      <Layout>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/contact" element={<Contact />} />
+        </Routes>
+      </Layout>
+    </Router>
+  );
+};
+
+export default App;
+```
+
+#### Explanation
+
+1. **Layout Component (`Layout.jsx`)**:
+   - Provides a layout structure with a header (`navbar`) containing navigation links (`NavLink`) for Home, About, and Contact routes.
+   - Defines a main content area (`<main>`), where the `Outlet` component from React Router (`react-router-dom`) is used to render child routes dynamically based on the current route.
+
+2. **Router Configuration (`App.jsx`)**:
+   - Sets up routing using `BrowserRouter` (`Router`) from `react-router-dom`.
+   - Wraps the entire application with `Router` and `Layout`.
+   - Uses `Routes` and `Route` components to define paths (`path`) and corresponding components (`element`) to render when paths match.
+
+3. **Navigation (`NavLink`)**:
+   - Enables navigation between different routes (`Home`, `About`, `Contact`) within the application.
+   - Automatically applies active styling (`activeClassName`) to the currently active route link.
+
+4. **Outlet**:
+   - The `<Outlet />` component in `Layout.jsx` serves as a placeholder where child components defined in `Routes` (`Home`, `About`, `Contact`) will be rendered based on the current route.
+
+#### Usage
+
+- **Routing**: Users can navigate between `/`, `/about`, and `/contact` routes within the application.
+- **Layout**: Provides a consistent structure and navigation across different pages (`Home`, `About`, `Contact`).
+- **Component Composition**: Uses `Layout` as a wrapper to maintain a consistent UI layout and structure with dynamic content rendering based on routes.
+
+#### Considerations
+
+- Ensure all components (`Layout`, `Home`, `About`, `Contact`) are correctly implemented and imported.
+- Customize CSS classes (`container`, `navbar`, `nav-link`, etc.) in `Layout.jsx` as per your design requirements.
+- Extend routing functionality with additional features like nested routes, redirects, or route guards (`<Route>` components) for more complex navigation scenarios.
+
+This setup provides a flexible and scalable way to structure your React application using React Router, leveraging `Outlet` for dynamic rendering of child routes within a layout component (`Layout`). Adjust paths, components, and styling classes according to your project's specific needs and design guidelines.
+
+### Way to representing routes
+
+
+#### Type-1
+```javascript
+const router = createBrowserRouter([
+  {
+    path: '/',
+    element: <Layout />,
+    children: [
+      {
+        path: '',
+        element: <Home />
+      },
+      {
+        path: 'about',
+        element: <About />
+      },
+      {
+        path: 'contact',
+        element: <Contact />
+      }
+    ]
+  }
+]);
+
+// Render the application using ReactDOM.createRoot
+ReactDOM.createRoot(document.getElementById('root')).render(
+  <React.StrictMode>
+    <RouterProvider router={router} />
+  </React.StrictMode>
+);
+```
+
+#### Type-2
+
+```javascript
+const router = createBrowserRouter(
+  createRoutesFromElements(
+    <Route path='/' element={<Layout />}>
+      <Route path='' element={<Home />} />
+      <Route path='about' element={<About />} />
+      <Route path='contact' element={<Contact />} />
+      <Route path='user/:userid' element={<User />} />
+      <Route 
+      loader={githubInfoLoader}
+      path='github' 
+      element={<Github />}
+       />
+    </Route>
+  )
+)
+
+ReactDOM.createRoot(document.getElementById('root')).render(
+  <React.StrictMode>
+    <RouterProvider router={router} />
+  </React.StrictMode>,
+)
+
+```
+
+
+#### Type-3
+
+```javascript
+
+const App = () => {
+  return (
+    <Router>
+      <Layout>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/contact" element={<Contact />} />
+        </Routes>
+      </Layout>
+    </Router>
+  );
+};
+
+
+```
+---
+### useParmas from 'react-router-dom'
+
+![alt text](image-13.png)
+
+#### use useId using useParams
+
+![alt text](image-14.png)
+
+![alt text](image-15.png)
+
+
+### Github API fetching
+
+- Data send by in string format so first change into JSON format.
+
+![alt text](image-16.png)
+
+![alt text](image-17.png)
+
+### react outlet
+- it keep same header and footer 
+- <Outlet/> portion keep change by required route componenet
+
+![alt text](image-18.png)
+
+![alt text](image-19.png)
+
+
+### Concept of Loader
+
+```javascript
+
+import React, { useEffect, useState } from 'react'
+import { useLoaderData } from 'react-router-dom'
+
+function Github() {
+    const data = useLoaderData()
+    // const [data, setData] = useState([])
+    // useEffect(() => {
+    //  fetch('https://api.github.com/users/hiteshchoudhary')
+    //  .then(response => response.json())
+    //  .then(data => {
+    //     console.log(data);
+    //     setData(data)
+    //  })
+    // }, [])
+    
+  return (
+    <div className='text-center m-4 bg-gray-600 text-white p-4 text-3xl'>Github followers: {data.followers}
+    <img src={data.avatar_url} alt="Git picture" width={300} />
+    </div>
+  )
+}
+
+export default Github
+
+export const githubInfoLoader = async () => {
+    const response = await fetch('https://api.github.com/users/hiteshchoudhary')
+    return response.json()
+}
+
+```
+
+
+```javascript
+
+import Github, { githubInfoLoader } from './components/Github/Github.jsx'
+
+
+const router = createBrowserRouter(
+  createRoutesFromElements(
+    <Route path='/' element={<Layout />}>
+      ....
+      <Route 
+      loader={githubInfoLoader}
+      path='github' 
+      element={<Github />}
+       />
+    </Route>
+  )
+)
+
+```
+---
 
