@@ -46,6 +46,9 @@
     - [Github API fetching](#github-api-fetching)
     - [React Outlet again](#react-outlet)
     - [Concept of Loader](#concept-of-loader)
+14. [Context API](#context-api)
+
+
 ----
 
 
@@ -2611,4 +2614,118 @@ export default function ThemeBtn() {
 
 ---
 
+## Todo List Application
+
+This React application manages a todo list with features to add, update, delete, and toggle the completion status of todos. The todos are persisted in `localStorage`.
+
+### Features
+
+- **Add Todo**: Add a new todo item to the list.
+- **Update Todo**: Update an existing todo item.
+- **Delete Todo**: Remove a todo item from the list.
+- **Toggle Complete**: Mark a todo item as completed or not completed.
+- **Persistence**: Todos are saved in `localStorage` and loaded on application start.
+
+### Code Explanation
+
+#### Adding a Todo
+
+The `addTodo` function creates a new todo item with a unique `id` and merges it with the existing todos.
+- here `addTodo()` get todo in this version 
+```json
+  {
+    todo: "Home work",
+    completed : false,
+  }
+
+```
+- So' first we spread it and add  `id: Date.now()`, using date as unique id, and stored it with existing todos.
+
+
+```javascript
+const addTodo = (todo) => {
+  setTodos((prev) => [{ id: Date.now(), ...todo }, ...prev]);
+};
+```
+
+#### Updating a Todo
+
+The `updateTodo` function updates an existing todo by matching the `id` and replacing the old todo with the new one.
+
+```javascript
+const updateTodo = (id, todo) => {
+  setTodos((prev) => prev.map((prevTodo) => (prevTodo.id === id ? todo : prevTodo)));
+};
+```
+
+#### Deleting a Todo
+
+The `deleteTodo` function removes a todo from the list by filtering out the todo with the matching `id`.
+- Delete using re-evaluate whole todos array.
+- Using filter method we iterate over all todos and if any todo id match with given id,So`  we simply  not include into our array. 
+
+
+```javascript
+const deleteTodo = (id) => {
+  setTodos((prev) => prev.filter((todo) => todo.id !== id));
+};
+```
+
+#### Toggling Todo Completion
+
+The `toggleComplete` function toggles the completion status of a todo item by matching the `id`.
+- When we find a particular id object we simply spread it using "..." and chnage the completed only.
+- Here our one object look like:
+
+   Ex: 
+```json
+
+   todo = [
+    { id : 1,
+      todo : "Work from home",
+      completed : false,
+     },
+    {},
+    ...
+   ]; 
+
+```
+
+```javascript
+const toggleComplete = (id) => {
+  setTodos((prev) => 
+    prev.map((prevTodo) => 
+      prevTodo.id === id ? { ...prevTodo, completed: !prevTodo.completed } : prevTodo));
+};
+```
+
+#### Loading Todos from Local Storage
+
+The following `useEffect` hook loads the todos from `localStorage` when the component mounts.
+- we know Local storage keep safe value in form of string.
+- So, first we access the value using "todos" key, and parse into JSON format.
+
+```javascript
+useEffect(() => {
+  const todos = JSON.parse(localStorage.getItem("todos"));
+
+  if (todos && todos.length > 0) {
+    setTodos(todos);
+  }
+}, []);
+```
+
+#### Saving Todos to Local Storage
+
+This `useEffect` hook saves the todos to `localStorage` whenever the `todos` state changes.
+- Local storage keep safe items in form of string so, first we have to convert JSON data into string format to save int local storage.
+- Local storage keep safe the data in form key value pari.
+- You can access value using key e.g.: "todos" is a key.
+
+```javascript
+useEffect(() => {
+  localStorage.setItem("todos", JSON.stringify(todos));
+}, [todos]);
+```
+---
 
