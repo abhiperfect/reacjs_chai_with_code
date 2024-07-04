@@ -47,7 +47,8 @@
     - [React Outlet again](#react-outlet)
     - [Concept of Loader](#concept-of-loader)
 14. [Context API](#context-api)
-
+15. [Todo List Application](#todo-list-application)
+   - [Saving todos in Local Storage](#saving-todos-to-local-storage)
 
 ----
 
