@@ -523,6 +523,24 @@ JSX is a powerful feature of React that allows you to write HTML-like syntax dir
   - **Next.js**: Integrates backend and frontend within a single page.
   - **Gatsby**
   - **Remix**
+
+### Limitations of REACT
+  1. SEO Challenges
+    - Client-Side Rendering (CSR): 
+      React's default client-side rendering can pose challenges for search engine optimization (SEO) because search engines may not fully index JavaScript-rendered content.
+    - Initial HTML is Minimal:
+      When search engines like Google crawl a webpage, they first see the raw HTML that is served by the server. In CSR, this initial HTML is often empty or contains very little content because the actual content is rendered later by React on the client side.
+    - JavaScript Execution by Search Engines:
+      Search engines need to execute JavaScript to render the full content of the page. While modern search engines like Google can execute JavaScript to some extent, it's not always guaranteed that they will or that they will do so effectively. Some search engines, particularly older or less advanced ones, might not execute JavaScript at all, leading them to see only the basic, unrendered HTML.
+    - Incomplete Indexing:
+      If the search engine doesn't fully execute the JavaScript or if it times out before the content is rendered, it might not index the page correctly. This means that the content rendered by React may not appear in search results, or the page might be ranked lower because the search engine couldn't see the full content. 
+  2. Prop Drilling: 
+    Passing data through multiple levels of components (prop drilling) can make the codebase harder to maintain. Solutions like Context API or state management libraries like Redux can help, but they add complexity.
+  3. State Management: 
+    Managing state in React can become complex, especially in larger applications. While tools like Redux, MobX, or Context API help, they introduce additional concepts and complexity.
+  4. Asynchronous State Updates: 
+    React's state updates are asynchronous, which can sometimes lead to unexpected behavior if not handled correctly.
+  
 ----
 
 ## Create react projects
